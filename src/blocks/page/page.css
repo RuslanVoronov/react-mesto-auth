@@ -1,0 +1,25 @@
+.page {
+    position: relative;
+    padding: 0 200px;
+    max-width: 880px;
+    min-height: 100vh;
+    margin: auto;
+}
+
+@media (max-width: 1150px) {
+    .page {
+        padding: 0 100px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .page {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 640px) {
+    .page {
+        padding: 0px 19px;
+    }
+}

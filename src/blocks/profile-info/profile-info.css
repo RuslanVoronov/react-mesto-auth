@@ -1,0 +1,14 @@
+.profile-info {
+    display: grid;
+    justify-items: flex-start;
+    grid-template-areas:
+        "name edit-button"
+        "about about";
+}
+
+@media (max-width: 640px) {
+    .profile-info {
+        flex-direction: column;
+        margin: 26px 0 36px 18px;
+    }
+}

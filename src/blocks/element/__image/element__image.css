@@ -1,0 +1,12 @@
+.element__image {
+    width: 100%;
+    aspect-ratio: 1;
+    grid-column: span 2;
+    cursor: pointer;
+    object-fit: cover;
+    transition: filter .5s;
+}
+
+.element__image:hover {
+    filter: brightness(50%);
+}
