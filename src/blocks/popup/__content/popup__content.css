@@ -6,6 +6,8 @@
     width: 430px;
     padding: 34px 36px 37px;
     box-sizing: border-box;
+    text-align: center;
+
 }
 
 @media (max-width: 640px) {

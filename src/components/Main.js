@@ -7,12 +7,15 @@ import { Link } from 'react-router-dom';
 function Main(props) {
 
     const currentUser = React.useContext(CurrentUserContext);
+    function removeToken() {
+        localStorage.removeItem("token")
+    }
 
     return (
         <>
             <Header>
                 <p className='header__email'>{props.email}</p>
-                <Link to="/signin" className="header__menu-item">Выйти</Link>
+                <Link onClick={removeToken} to="/signin" className="header__menu-item">Выйти</Link>
             </Header>
             <main>
                 {/*  profile */}

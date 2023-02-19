@@ -10,11 +10,12 @@ import api from '../utils/Api';
 import React from 'react';
 import { useState, useEffect } from "react";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { Login } from './Login';
 import { Register } from './Register';
 import { InfoToolTip } from './InfoTooltip';
 import { getContent } from '../utils/auth'
+import ProtectedRoute from './ProtectedRoute';
 
 function App() {
   const [currentUser, setCurrentUser] = React.useState({ name: 'Загрузка' });
@@ -73,7 +74,7 @@ function App() {
 
   // Проверка токена
   function tokenCheck() {
-    const jwt = localStorage.getItem("jwt")
+    const jwt = localStorage.getItem("token")
     if (jwt) {
       getContent(jwt)
         .then((res) => {
@@ -195,8 +196,9 @@ function App() {
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
           <Routes>
+
             <Route path='/cards' element={
-              <Main
+              <ProtectedRoute loggedIn={loggedIn}
                 email={email}
                 isOpen={isProfilePopupOpened}
                 onEditProfile={handleEditProfileClick}
@@ -206,10 +208,12 @@ function App() {
                 onCardLike={handleCardLike}
                 onCardDelete={handleCardDelete}
                 cards={cards}
+                element={Main}
               />
             } />
             <Route path='/signup' element={<Register regState={registrationState} />} />
             <Route path='/signin' element={<Login handleLoggedIn={handleLoggedIn} />} />
+            <Route path='*' element={loggedIn ? (<Navigate to='/cards' />) : (<Navigate to='signin' />)} />
           </Routes>
 
           <Footer />

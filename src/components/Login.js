@@ -18,15 +18,15 @@ export function Login({ handleLoggedIn }) {
         authorize({ email, password })
             .then((data) => {
                 if (data.token) {
-                    localStorage.setItem("jwt", data.token)
+                    localStorage.setItem("token", data.token)
                     handleLoggedIn(values.email)
                     navigate("/cards")
                 }
             }
             )
-        .catch((err) => {
-            console.log(`Ошибка: ${err}`)
-        })
+            .catch((err) => {
+                console.log(`Ошибка: ${err}`)
+            })
     }
 
     return (

@@ -23,7 +23,7 @@ export function Register(props) {
             })
             .catch((err) => {
                 props.regState(false)
-                setMessage(`Ошибка: ${err.status}`)
+                setMessage(`Ошибка: ${err}`)
             })
 
     }
