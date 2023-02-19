@@ -8,6 +8,7 @@ function AddPlacePopup(props) {
     function handleSubmit(e) {
         e.preventDefault();
         props.onAddPlace(values);
+        setValues({})
     }
 
     return (

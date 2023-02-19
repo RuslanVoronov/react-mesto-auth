@@ -1,31 +1,14 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import React from "react"
 import { useForm } from "../hooks/useForm";
-import { register } from "../utils/auth";
 import Header from "./Header";
 import { Link } from "react-router-dom";
 
-export function Register(props) {
-    const navigate = useNavigate();
-    const [message, setMessage] = useState("")
+export function Register({ onRegister }) {
     const { values, handleChange, setValues } = useForm({})
-
-
 
     function handleSubmit(e) {
         e.preventDefault();
-        let { email, password } = values;
-        register(email, password)
-            .then((res) => {
-                props.regState(true)
-                setMessage("")
-                navigate("/signin")
-            })
-            .catch((err) => {
-                props.regState(false)
-                setMessage(`Ошибка: ${err}`)
-            })
-
+        onRegister(values)
     }
 
     return (
@@ -40,7 +23,7 @@ export function Register(props) {
                         maxLength="40" placeholder="Email" required />
 
                     <input className="authorization__input authorization__input_type_password" value={values.password || ''} name='password' onChange={handleChange} minLength="2"
-                        maxLength="200" placeholder="Пароль" required />
+                        type="password" maxLength="200" placeholder="Пароль" required />
                     <button className="authorization__submit" type="submit">Зарегистрироваться</button>
                 </form>
                 <p className="authorization__extra-text">Уже зарегистрированы? <Link className="authorization__link" to="/signin">Войти</Link></p>

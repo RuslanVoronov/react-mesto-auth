@@ -1,12 +1,9 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import React from "react"
 import { useForm } from "../hooks/useForm";
-import { authorize } from "../utils/auth";
 import Header from "./Header";
 import { Link } from "react-router-dom";
 
-export function Login({ handleLoggedIn }) {
-    const navigate = useNavigate();
+export function Login({ handleLoggedIn, onLogin }) {
     const { values, handleChange, setValues } = useForm({
         email: "",
         password: "",
@@ -14,19 +11,8 @@ export function Login({ handleLoggedIn }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        let { email, password } = values;
-        authorize({ email, password })
-            .then((data) => {
-                if (data.token) {
-                    localStorage.setItem("token", data.token)
-                    handleLoggedIn(values.email)
-                    navigate("/cards")
-                }
-            }
-            )
-            .catch((err) => {
-                console.log(`Ошибка: ${err}`)
-            })
+        handleLoggedIn(values.email)
+        onLogin(values)
     }
 
     return (
@@ -41,7 +27,7 @@ export function Login({ handleLoggedIn }) {
                         maxLength="40" placeholder="Email" required />
 
                     <input className="authorization__input authorization__input_type_password" value={values.password || ''} name='password' onChange={handleChange} minLength="2"
-                        maxLength="200" placeholder="Пароль" required />
+                        maxLength="200" type="password" placeholder="Пароль" required />
                     <button className="authorization__submit" type="submit">Войти</button>
                 </form>
             </section>

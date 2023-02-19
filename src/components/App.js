@@ -16,6 +16,8 @@ import { Register } from './Register';
 import { InfoToolTip } from './InfoTooltip';
 import { getContent } from '../utils/auth'
 import ProtectedRoute from './ProtectedRoute';
+import { authorize } from '../utils/auth';
+import { register } from '../utils/auth';
 
 function App() {
   const [currentUser, setCurrentUser] = React.useState({ name: 'Загрузка' });
@@ -31,10 +33,34 @@ function App() {
   const isOpen = isEditAvatarPopupOpen || isProfilePopupOpened || isAddPlacePopupOpen || selectedCard;
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate()
+
   useEffect(() => {
     tokenCheck();
   }, [])
 
+  // Запрс карточек и информации профиля
+  useEffect(() => {
+    if (tokenCheck) {
+
+      api.getInitialCards()
+        .then((res) => {
+          setCards(res)
+        })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+        });
+      api.getUserInfo()
+        .then((res) => {
+          setCurrentUser(res)
+        })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+        });
+
+    }
+  }, []);
+
+  // Закрытие на Escape
   useEffect(() => {
     function closeByEscape(evt) {
       if (evt.key === 'Escape') {
@@ -49,47 +75,53 @@ function App() {
     }
   }, [isOpen])
 
-
-  // Запрс карточек
-  useEffect(() => {
-    api.getInitialCards()
-      .then((res) => {
-        setCards(res)
-      })
-      .catch((err) => {
-        console.log(`Ошибка: ${err}`);
-      });
-  }, []);
-
-  // Запрос информации профиля
-  useEffect(() => {
-    api.getUserInfo()
-      .then((res) => {
-        setCurrentUser(res)
-      })
-      .catch((err) => {
-        console.log(`Ошибка: ${err}`);
-      });
-  }, []);
-
   // Проверка токена
   function tokenCheck() {
     const jwt = localStorage.getItem("token")
     if (jwt) {
       getContent(jwt)
         .then((res) => {
-          console.log(res)
           setLoggedIn(true)
           setEmail(res.data.email)
           navigate("/cards")
         })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+        });
     }
+  }
+
+  // Регистрация
+  function handleRegister(value) {
+    register(value)
+      .then(() => {
+        registrationState(true)
+        navigate("/signin")
+      })
+      .catch((err) => {
+        registrationState(false)
+        console.log(`Ошибка: ${err}`);
+      })
+  }
+
+  // Авторизация
+  function handleLogin(data) {
+    authorize(data)
+      .then((res) => {
+        if (res.token) {
+          localStorage.setItem("token", res.token)
+          navigate("/cards")
+        }
+      }
+      )
+      .catch((err) => {
+        console.log(`Ошибка: ${err}`)
+      })
   }
 
   function handleLoggedIn(value) {
     setEmail(value)
     setLoggedIn(true)
-
   }
 
   // ЛАЙК
@@ -211,8 +243,8 @@ function App() {
                 element={Main}
               />
             } />
-            <Route path='/signup' element={<Register regState={registrationState} />} />
-            <Route path='/signin' element={<Login handleLoggedIn={handleLoggedIn} />} />
+            <Route path='/signup' element={<Register onRegister={handleRegister} />} />
+            <Route path='/signin' element={<Login onLogin={handleLogin} handleLoggedIn={handleLoggedIn} />} />
             <Route path='*' element={loggedIn ? (<Navigate to='/cards' />) : (<Navigate to='signin' />)} />
           </Routes>
 
@@ -224,7 +256,7 @@ function App() {
           <EditAvatarPopup isLoading={isLoading} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} />
 
           <AddPlacePopup isLoading={isLoading} isOpen={isAddPlacePopupOpen} onAddPlace={handleAddPlaceSubmit} onClose={closeAllPopups} />
-          <InfoToolTip isOpen={isInfoToolTopOpened} isRegisterSucces={isRegisterSucces} onClose={closeAllPopups} />
+          <InfoToolTip text={isRegisterSucces ? "Вы успешно зарегистрировались!" : "Что-то пошло не так! Попробуйте ещё раз."} isOpen={isInfoToolTopOpened} onClose={closeAllPopups} />
 
           {/*  popup question */}
           <PopupWithForm name="question" isLoading={isLoading} title="Вы уверены?" onClose={closeAllPopups} buttonText="Да" />
