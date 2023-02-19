@@ -1,0 +1,6 @@
+.authorization__form {
+    display: flex;
+    flex-direction: column;
+    color: #CCC;
+    width: 100%;
+}

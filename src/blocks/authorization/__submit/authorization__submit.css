@@ -1,0 +1,12 @@
+.authorization__submit {
+    background: #FFFFFF;
+    border-radius: 2px;
+    width: 100%;
+    cursor: pointer;
+    height: 50px;
+    margin-top: 216px;
+}
+
+.authorization__submit:hover {
+    opacity: 0.85;
+}

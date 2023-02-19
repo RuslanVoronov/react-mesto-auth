@@ -1,5 +1,4 @@
 import '../App.css';
-import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
@@ -11,16 +10,29 @@ import api from '../utils/Api';
 import React from 'react';
 import { useState, useEffect } from "react";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Login } from './Login';
+import { Register } from './Register';
+import { InfoToolTip } from './InfoTooltip';
+import { getContent } from '../utils/auth'
 
 function App() {
   const [currentUser, setCurrentUser] = React.useState({ name: 'Загрузка' });
   const [isProfilePopupOpened, setIsEditProfilePopupOpened] = useState(false);
+  const [email, setEmail] = useState("")
   const [isAddPlacePopupOpen, setIsCardPopupOpened] = useState(false);
   const [isEditAvatarPopupOpen, setIsAvatarPopupOpened] = useState(false);
+  const [isInfoToolTopOpened, setIsInfoToolTopOpened] = useState(false)
+  const [isRegisterSucces, setIsRegisterSucces] = useState(false)
   const [cards, setCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const isOpen = isEditAvatarPopupOpen || isProfilePopupOpened || isAddPlacePopupOpen || selectedCard
+  const isOpen = isEditAvatarPopupOpen || isProfilePopupOpened || isAddPlacePopupOpen || selectedCard;
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate()
+  useEffect(() => {
+    tokenCheck();
+  }, [])
 
   useEffect(() => {
     function closeByEscape(evt) {
@@ -58,6 +70,26 @@ function App() {
         console.log(`Ошибка: ${err}`);
       });
   }, []);
+
+  // Проверка токена
+  function tokenCheck() {
+    const jwt = localStorage.getItem("jwt")
+    if (jwt) {
+      getContent(jwt)
+        .then((res) => {
+          console.log(res)
+          setLoggedIn(true)
+          setEmail(res.data.email)
+          navigate("/cards")
+        })
+    }
+  }
+
+  function handleLoggedIn(value) {
+    setEmail(value)
+    setLoggedIn(true)
+
+  }
 
   // ЛАЙК
   function handleCardLike(card) {
@@ -150,23 +182,36 @@ function App() {
     setIsCardPopupOpened(false);
     setIsAvatarPopupOpened(false);
     setSelectedCard(null);
+    setIsInfoToolTopOpened(false)
+  }
+
+  function registrationState(state) {
+    setIsInfoToolTopOpened(!isInfoToolTopOpened)
+    setIsRegisterSucces(state)
   }
 
   return (
-    <div className="body">
+    < div className="body" >
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
-          <Header />
-          <Main
-            isOpen={isProfilePopupOpened}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={setSelectedCard}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
-            cards={cards}
-          />
+          <Routes>
+            <Route path='/cards' element={
+              <Main
+                email={email}
+                isOpen={isProfilePopupOpened}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={setSelectedCard}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                cards={cards}
+              />
+            } />
+            <Route path='/signup' element={<Register regState={registrationState} />} />
+            <Route path='/signin' element={<Login handleLoggedIn={handleLoggedIn} />} />
+          </Routes>
+
           <Footer />
           <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
@@ -175,12 +220,14 @@ function App() {
           <EditAvatarPopup isLoading={isLoading} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups} />
 
           <AddPlacePopup isLoading={isLoading} isOpen={isAddPlacePopupOpen} onAddPlace={handleAddPlaceSubmit} onClose={closeAllPopups} />
+          <InfoToolTip isOpen={isInfoToolTopOpened} isRegisterSucces={isRegisterSucces} onClose={closeAllPopups} />
 
           {/*  popup question */}
           <PopupWithForm name="question" isLoading={isLoading} title="Вы уверены?" onClose={closeAllPopups} buttonText="Да" />
         </CurrentUserContext.Provider>
       </div>
     </div >
+
   );
 }
 

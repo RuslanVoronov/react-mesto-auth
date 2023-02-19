@@ -1,4 +1,9 @@
 .header {
+    font-family: 'Inter', Arial, sans-serif;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 45px 0 41px;
     border-bottom: 1px solid rgba(54, 54, 54, .7);
 }
