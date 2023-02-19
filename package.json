@@ -2,7 +2,7 @@
   "name": "mesto",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/RuslanVoronov/react-mesto-auth.git",
+  "homepage": "https://ruslanvoronov.github.io/react-mesto-auth/",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
