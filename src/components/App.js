@@ -38,10 +38,26 @@ function App() {
     tokenCheck();
   }, [])
 
+  // Проверка токена
+  function tokenCheck() {
+    const jwt = localStorage.getItem("token")
+    if (jwt) {
+      getContent(jwt)
+        .then((res) => {
+          setLoggedIn(true)
+          console.log(loggedIn)
+          setEmail(res.data.email)
+          navigate("/cards")
+        })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+        });
+    }
+  }
+
   // Запрс карточек и информации профиля
   useEffect(() => {
-    if (tokenCheck) {
-
+    if (loggedIn) {
       api.getInitialCards()
         .then((res) => {
           setCards(res)
@@ -56,9 +72,8 @@ function App() {
         .catch((err) => {
           console.log(`Ошибка: ${err}`);
         });
-
     }
-  }, []);
+  }, [loggedIn]);
 
   // Закрытие на Escape
   useEffect(() => {
@@ -74,22 +89,6 @@ function App() {
       }
     }
   }, [isOpen])
-
-  // Проверка токена
-  function tokenCheck() {
-    const jwt = localStorage.getItem("token")
-    if (jwt) {
-      getContent(jwt)
-        .then((res) => {
-          setLoggedIn(true)
-          setEmail(res.data.email)
-          navigate("/cards")
-        })
-        .catch((err) => {
-          console.log(`Ошибка: ${err}`);
-        });
-    }
-  }
 
   // Регистрация
   function handleRegister(value) {
@@ -230,7 +229,8 @@ function App() {
           <Routes>
 
             <Route path='/cards' element={
-              <ProtectedRoute loggedIn={loggedIn}
+              <ProtectedRoute
+                loggedIn={setLoggedIn}
                 email={email}
                 isOpen={isProfilePopupOpened}
                 onEditProfile={handleEditProfileClick}

@@ -9,6 +9,7 @@ function Main(props) {
     const currentUser = React.useContext(CurrentUserContext);
     function removeToken() {
         localStorage.removeItem("token")
+        props.loggedIn(false)
     }
 
     return (
